@@ -14,21 +14,6 @@ const char *   OctopusAPI::SubjectRestart = "Gontroller - Restart";
 const char *   OctopusAPI::SubjectBatteryLost = "Gontroller - Battery lost";
 const char *   OctopusAPI::lastReportStatus = "\0               ";
 
-// WiFiManager wm;
-// WiFiManagerParameter GoNtrollerParam("<p>GoNtroller</p>");
-
-// WiFiManagerParameter custom_text_port("<br>What is the SMTP port? (Gmail = 465)");
-// WiFiManagerParameter eml_smtp_port("port", "smtp port", "465", 5);
-
-// WiFiManagerParameter custom_text_server("<br><br>What is the SMTP server?<br>(Gmail = smtp.gmail.com)");
-// WiFiManagerParameter eml_smtp_server("server", "smtp server", "smtp.gmail.com", 40);
-
-// WiFiManagerParameter custom_text_email("<br><br>What is your email address?<br>(johndoe@gmail.com)");
-// WiFiManagerParameter eml_email("email", "smtp email", "", 40);
-
-// WiFiManagerParameter custom_text_password("<br><br>What is your email password?<br>(doepass123)");
-// WiFiManagerParameter eml_password("password", "smtp password", "", 40);
-
 AlertMe alert(EMLSMTP, EMLPORT);
 
 WiFiUDP udp;
@@ -85,11 +70,7 @@ OctopusAPI::OctopusAPI () {
   lastPriceFetched = 0;
   highestPriceIncVAT = infinity();
   lowestPriceIncVAT = infinity();
-  // wm.setHostname(WiFiSetup);
-  // wm.setConfigPortalTimeout(120);
-  // wm.setConnectTimeout(30);
   WiFiSleeping = true; // initialise to allow WiFi to be started
-  // WiFiOn();
 }
 
 bool OctopusAPI::setClock() {
@@ -160,7 +141,6 @@ bool OctopusAPI::setClock() {
   if (octoConn.debugOutput) Serial.println();
   udp.stop();
   return false; // Timed out  
-
 }
 
 void OctopusAPI::sendMail(const char* subject, const char* message, void (*writeFn)(Client& client)) {
@@ -210,21 +190,8 @@ bool OctopusAPI::Holiday(const uint16_t fday, const uint16_t fmonth, const uint1
 
 bool OctopusAPI::PowerHour(const uint16_t day, const uint16_t month, const uint16_t year,
     const uint16_t hourFrom, const uint16_t minuteFrom) {
-  // struct tm timeinfo;
-  // time_t now = time(nullptr);
-  // localtime_r(&now, &timeinfo);
-  // int m = month - 1;
-  // int y = year - 1900;
-  // if ((timeinfo.tm_hour == hourFrom) && (timeinfo.tm_mday == day) && (timeinfo.tm_mon == m)
-  //     && (timeinfo.tm_year == y) && (timeinfo.tm_min >= minuteFrom)) {
-  //   return(true);
-  // }
-  // if ((timeinfo.tm_hour == hourFrom + 1) && (timeinfo.tm_mday == day) && (timeinfo.tm_mon == m)
-  //     && (timeinfo.tm_year == y) && (timeinfo.tm_min < minuteFrom)) {
-  //   return(true);
-  // }  
-  // return(false);
-    // Build a tm structure for the start of the power hour
+
+  // Build a tm structure for the start of the power hour
   struct tm powerStart = {0};
   powerStart.tm_year = year - 1900;  // tm_year is years since 1900
   powerStart.tm_mon  = month - 1;     // tm_mon is 0-based (0 = January)
@@ -248,7 +215,6 @@ bool OctopusAPI::PowerHour(const uint16_t day, const uint16_t month, const uint1
 }
 
 bool OctopusAPI::connect(BearSSL::WiFiClientSecure *client, const char *server, const uint16_t port, const char *certificate) {
-  // BearSSL::WiFiClientSecure client;
   if (certificate == NULL) {
     client->setInsecure();
   }
@@ -379,67 +345,6 @@ bool OctopusAPI::fetchURL(BearSSL::WiFiClientSecure *client, const char *host, c
     readAndParseStream(client, ps, parser);  // 🔄 Delegated parsing
   }
 
-    // time_t day2 = time(nullptr);
-    // struct tm todayTM;
-    // localtime_r(&day2, &todayTM);
-    // todayTM.tm_min = 0;
-    // todayTM.tm_sec = 0;
-    // if (todayTM.tm_hour > 11) todayTM.tm_mday++;
-    // todayTM.tm_hour = 0;
-    
-//     const int bufSize = 32;
-//     char tmp[bufSize]; //32
-//     do {      
-//       memset(tmp, 0, 32);        // memset fills tmp with 3x #00h            
-//       int rlen = client->readBytes((uint8_t*)tmp, bufSize - 1);
-//       yield();
-//       if (rlen < 0) {
-//         break;
-//       }
-     
-//       if (ps.stringSuspected) {
-//         strncat(ps.searchStr, tmp, bufSize);
-//         char *endString;
-//         endString = strchr(ps.searchStr, '}');
-//         if ((strlen(ps.searchStr) > (32 * 4)) || (endString)) {
-//           ps.stringSuspected = false; 
-//           if (endString) {*endString = 0;} 
-//           if (debugOutput) Serial.printf("String No.%i is: %s\n", ps.count, ps.searchStr);    // searchStr is complete and ready to be parsed
-//           if (ps.count < Agile_Slots) {
-//             struct TimeSlot *ts;
-//             ts = &priceData[ps.count];
-//             ts->parse(ps.searchStr);          
-//             if (ts->From != 0) {
-//               if (ps.count < 65) {
-//                 if (lowestPriceIncVAT > ts->PriceIncVAT) {
-//                   lowestPriceIncVAT = ts->PriceIncVAT;
-//                 }
-//                 if ((highestPriceIncVAT == infinity()) || (highestPriceIncVAT < ts->PriceIncVAT)) {
-//                   highestPriceIncVAT = ts->PriceIncVAT;
-//                 }
-//               }      
-//               ps.count++;
-//             }
-//           }  
-//           memset(ps.searchStr, 0, bufSize*5);          
-//         }
-         
-//       }  
-      
-//       char *nl;
-//       nl = strchr(tmp, '{');
-//       if (nl) {
-//         ps.stringSuspected = true;  
-//         memset(ps.searchStr, 0, bufSize*4); // memset fills searchstr 
-//         strcpy(ps.searchStr, nl);      
-//         *nl = 0; 
-//       }
-
-       
-// //      Serial.print(tmp); // normal output
-      
-//     } while (millis() < to);
-//   }
   client->stop();
   uint32_t freeStackEnd = ESP.getFreeContStack();
   if (octoConn.debugOutput) Serial.printf("\nHighest price %4.2f; lowest price %4.2f\n", highestPriceIncVAT, lowestPriceIncVAT);
@@ -497,12 +402,10 @@ void OctopusAPI::initTime () {
   if(!gotLocalTime){
     if (octoConn.debugOutput) printDebug(PSTR("  Failed to obtain time\n"));
     // Serial.println("  Failed to obtain time");
-//    setStatus (sLimp);
     return;
   }
   if (octoConn.debugOutput) printDebug(PSTR("  Got the time from NTP\n"));
-  // Serial.println("  Got the time from NTP");
-  // Now we can set the real timezone
+
   if (octoConn.debugOutput) Serial.printf("  Timezone set to %s\n", MyTZ);
   // setenv("TZ", MyTZ, 1);  //  Now adjust the TZ.  Clock settings are adjusted to show the new local time
   // setenv("TZ", "GMT0BST,M3.5.0/1,M10.5.0", 1);
@@ -517,14 +420,12 @@ void OctopusAPI::initTime () {
 void OctopusAPI::WiFiOff () {
   if (WiFiSleeping) return;
   sntp_stop();
-  // wm.disconnect();
   WiFi.setAutoReconnect(false); 
   WiFi.mode( WIFI_OFF );
   delay(50);
   WiFi.forceSleepBegin();
   delay( 10 );
   printDebug(PSTR("WiFi off\n"));
-  // Serial.println("WiFi off");
   WiFiSleeping = true;
 }
 
@@ -535,19 +436,6 @@ bool OctopusAPI::WiFiOn() {
   WiFi.setAutoConnect(false); 
   WiFi.setAutoReconnect(false);
   WiFi.mode( WIFI_STA );
-  // if (wm.getWiFiIsSaved()) {
-  //   wm.setConnectTimeout(5);
-  //   Serial.println("here");
-  //   int retry = 5;
-  //   while ((WiFiSleeping) && (retry > 0)) {
-  //     WiFiSleeping = !wm.autoConnect(WiFiSetup, NULL);
-  //     retry--;
-  //   }
-  // }
-  // else {
-  //   wm.setConnectTimeout(300);
-  //   WiFiSleeping = !wm.autoConnect(WiFiSetup, NULL);
-  // }
 
   printDebug(PSTR("MAC Address:  "));
   // Serial.print("MAC Address:  ");
@@ -723,18 +611,6 @@ bool OctopusAPI::IsInCheapestSlotsToday(const uint8_t slotCount){
   }
   return (result);
 
-  // float* ptr; 
-  // ptr = (float*)calloc(slotCount * sizeof(float)); 
-  // if (ptr == NULL) { 
-  //     Serial.printf("Memory not allocated.\n"); 
-  //   } 
-  //   else { 
-  //     printf("Memory successfully allocated using malloc.\n");
-  //     for (int i = 0; i < slotCount; ++i) { 
-  //           ptr[i] = infinity(); 
-  //       } 
-  //     free(ptr);  
-  //   }   
 }
 
 bool OctopusAPI::IsInCheapestConsecutiveSlotsToday(const uint8_t slotCount) { // from 1900 to 1900
@@ -806,7 +682,3 @@ int OctopusAPI::strcmp_RAM_P(const char *ram, PGM_P prog) {
     }
   }
 }
-
-// void OctopusAPI::sendMyData(Client& c) {
-//   c.print("Test\n");
-// }
